@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>On Cloud Bali – Events</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Simple Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; line-height: 1.5; }
+    header { background: #69b3e7 url('images/hero.jpg') center/cover no-repeat; color: white; padding: 4rem 1rem; text-align: center; }
+    header h1 { font-size: 2rem; margin-bottom: 1rem; }
+    /* Layout */
+    .container { display: flex; flex-wrap: wrap; }
+    @media (min-width: 768px) {
+      .container { flex-wrap: nowrap; }
+    }
+    aside.filters { flex: 1 1 200px; padding: 1rem; background: #f4f4f4; }
+    main { flex: 3 1 0; padding: 1rem; }
+    /* Filter form */
+    fieldset { margin-bottom: 1rem; border: 1px solid #ccc; padding: 1rem; }
+    legend { font-weight: bold; }
+    label { display: block; margin: 0.5rem 0; }
+    /* Event grid */
+    .events-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .events-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 1024px) {
+      .events-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .event-card {
+      position: relative; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;
+      background: #fff; cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .event-card:hover { transform: scale(1.02); }
+    .event-card img {
+      width: 100%; height: auto;
+      display: block;
+    }
+    .event-info { padding: 0.5rem 1rem; }
+    .event-info h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .event-info .price { color: #d63384; font-weight: bold; }
+    .event-info .reviews { font-size: 0.9rem; color: #555; margin-top: 0.5rem; }
+    /* Modal dialog */
+    dialog { max-width: 600px; width: 90%; padding: 1rem; border: none; border-radius: 4px; }
+    dialog::backdrop { background: rgba(0,0,0,0.5); }
+    .close-btn { position: absolute; top: 0.5rem; right: 0.5rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Upcoming Community Events in Bali</h1>
+  <p>Discover local workshops, rituals, and gatherings</p>
+</header>
+
+<div class="container">
+  <aside class="filters" aria-label="Filter Events">
+    <form id="filterForm">
+      <fieldset>
+        <legend>Availability</legend>
+        <label><input type="checkbox" name="inStock" checked> In Stock</label>
+        <label><input type="checkbox" name="outOfStock"> Out of Stock</label>
+      </fieldset>
+      <fieldset>
+        <legend>Price (IDR)</legend>
+        <label>From: <input type="number" name="priceMin" min="0" placeholder="0"></label>
+        <label>To: <input type="number" name="priceMax" min="0" placeholder="1000000"></label>
+      </fieldset>
+      <fieldset>
+        <legend>Sort By</legend>
+        <label><select name="sort">
+          <option value="featured">Featured</option>
+          <option value="priceAsc">Price: Low to High</option>
+          <option value="priceDesc">Price: High to Low</option>
+        </select></label>
+      </fieldset>
+      <button type="button" onclick="applyFilters()">Apply</button>
+      <button type="reset">Clear</button>
+    </form>
+  </aside>
+
+  <main>
+    <div class="events-grid" id="eventsGrid">
+      <!-- Event cards will be inserted here by JavaScript -->
+    </div>
+    <button id="loadMoreBtn">Load More</button>
+  </main>
+</div>
+
+<!-- Modal dialog for event details -->
+<dialog id="eventModal" aria-labelledby="modalTitle">
+  <button class="close-btn" aria-label="Close" onclick="document.getElementById('eventModal').close()">✕</button>
+  <h2 id="modalTitle">Event Title</h2>
+  <p id="modalDesc">Event details go here.</p>
+</dialog>
+
+<script>
+  // Sample static JSON data (in practice, load via fetch from events.json)
+  const eventsData = [
+    {id:1, title:"Pilates by the Sea", image:"images/event1.jpg", price:350000, reviews:0},
+    {id:2, title:"Sunset Yoga & Ritual", image:"images/event2.jpg", price:198000, reviews:2},
+    /* ... more events ... */
+  ];
+  const grid = document.getElementById('eventsGrid');
+
+  function renderEvents(list) {
+    grid.innerHTML = ''; // clear current
+    list.forEach(evt => {
+      const card = document.createElement('article');
+      card.className = 'event-card';
+      card.innerHTML = `
+        <img src="${evt.image}" alt="${evt.title}" loading="lazy">
+        <div class="event-info">
+          <h2>${evt.title}</h2>
+          <div class="price">from ${evt.price.toLocaleString()} IDR</div>
+          <div class="reviews">${evt.reviews} review(s)</div>
+        </div>`;
+      card.onclick = () => openModal(evt);
+      grid.appendChild(card);
+    });
+  }
+  function applyFilters() {
+    // (Stub) In a full implementation, filter eventsData based on form values.
+    // For now, just re-render all.
+    renderEvents(eventsData);
+  }
+  function openModal(evt) {
+    const modal = document.getElementById('eventModal');
+    document.getElementById('modalTitle').textContent = evt.title;
+    document.getElementById('modalDesc').textContent = "Price: " + evt.price.toLocaleString() + " IDR\nReviews: " + evt.reviews;
+    modal.showModal();
+  }
+  // Initial render
+  renderEvents(eventsData);
+</script>
