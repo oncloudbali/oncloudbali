@@ -1,0 +1,11 @@
+.events-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media(min-width: 40rem) {
+  .events-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media(min-width: 64rem) {
+  .events-grid { grid-template-columns: repeat(3, 1fr); }
+}
